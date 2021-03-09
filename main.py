@@ -117,36 +117,42 @@ class Building:
         f = 2.5 #floor size
         for z in range(0, floors):
             for y in range(0, len(bd_map)):
-                for x in range(0, len(bd_map[y])):
-                    if x == len(bd_map[y])-1 or bd_map[y][x+1] == 1:
-                        r = 90
-                        if bd_map[y][x] == 3:
-                            self.addObj(window, x, -y, z*f, r)
-                        elif bd_map[y][x] == 2:
-                            self.addObj(wall, x, -y, z*f, r)
-                        #print("adicionar janela virada pra direita")
-                    if x == 0 or bd_map[y][x-1] == 1:
-                        r = 270
-                        if bd_map[y][x] == 3:
-                            self.addObj(window, x, -y, z*f, r)
-                        elif bd_map[y][x] == 2:
-                            self.addObj(wall, x, -y, z*f, r)
-                        #print("adicionar janela pra esquerda")
-                    if y == 0 or bd_map[y-1][x] == 1:
-                        r = 180
-                        if bd_map[y][x] == 3:
-                            self.addObj(window, x, -y, z*f, r)
-                        elif bd_map[y][x] == 2:
-                            self.addObj(wall, x, -y, z*f, r)
-                        #print("adicionar janela pra cima")
-                    if y == len(bd_map)-1 or bd_map[y+1][x] == 1:
-                        r = 0
-                        if bd_map[y][x] == 3:
-                            self.addObj(window, x, -y, z*f, r)
-                        elif bd_map[y][x] == 2:
-                            self.addObj(wall, x, -y, z*f, r)
-                        #print("adicionar janela pra baixo")
+                for x in range(0, len(bd_map[y])): 
+                    r = []
+                    new_obj = ''
+                    if bd_map[y][x] == 3:
+                        new_obj = window
+                    elif bd_map[y][x] == 2:
+                        new_obj = wall
+                    else:
+                        pass
                         
+                    if x == len(bd_map[y])-1 or bd_map[y][x+1] == 1:
+                        r.append(90)
+                    if x == 0 or bd_map[y][x-1] == 1:
+                        r.append(270)
+                    if y == 0 or bd_map[y-1][x] == 1:
+                        r.append(180)
+                    if y == len(bd_map)-1 or bd_map[y+1][x] == 1:
+                        r.append(0)
+                    
+                    for i in r:
+                        if new_obj != '':
+                            self.addObj(new_obj, x, -y, z*f, i)
+                        if z == floors-1 and bd_map[y][x] != 1:
+                            self.addObj('AdornoTetoReto', x, -y, (z+1)*f, i)
+                            
+                    if bd_map[y][x] != 1:
+                        self.addObj('Teto', x, -y, (z+1)*f, 0)
+            
+        bpy.context.scene.render.filepath = '/home/diego/Game Dev/MafiaGame/recursos/modelos de prédios/renders/' + str(i) + '.png'
+        bpy.ops.render.render(write_still = True)
+        for obj in bpy.context.scene.objects:
+            if obj.name.startswith('temp'):
+                obj.select_set(True)
+            else:
+                obj.select_set(False)
+        #bpy.ops.object.delete()
 
-
-b = Building(ArrayGen().getArray())
+for i in range(1):
+    b = Building(ArrayGen().getArray())
